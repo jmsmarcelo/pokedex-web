@@ -20,7 +20,11 @@ class Pokemon {
         jp.types.forEach(t => {
             this.types.push(t.type.name);
         });
-        this.details['about'] = {'abilities': []};
+        this.details['about'] = {
+            'height': [jp.height],
+            'weight': [jp.weight],
+            'abilities': []
+        };
         jp.abilities.forEach(a => {
             this.details.about.abilities.push(a.ability.name);
         });
@@ -69,22 +73,33 @@ function createPokemonPopup(p, v) {
         view = document.createElement('div'),
         detail = document.createElement('div'),
         nav = document.createElement('ol'),
-        body = document.createElement('div');
+        body = document.createElement('table');
     for(let k in p.details) {
-        const navItem = document.createElement('li'),
-            bodyTable= document.createElement('table');
+        const navItem = document.createElement('li');
         navItem.textContent = k;
-        nav.appendChild(navItem);
-        for(let ik in p.details[k]) {
-            const bodyTr = document.createElement('tr'),
-                bodyTrTitle = document.createElement('th'),
-                bodyTrValues = document.createElement('td');
-            bodyTrTitle.textContent = ik;
-            bodyTrValues.textContent = p.details[k][ik].join(', ');
-            bodyTr.append(bodyTrTitle, bodyTrValues);
-            bodyTable.appendChild(bodyTr);
+        navItem.onclick = function() {
+            this.style.opacity = '1';
+            this.style.borderBottom = '1px inset #0000ff';
+            for(let i = 0; i < nav.children.length; i++) {
+                if(this !== nav.children[i]) {
+                    nav.children[i].style.opacity = '0.3';
+                    nav.children[i].style.borderBottom = 'none';
+                }
+            }
+            while(body.firstChild) {
+                body.firstChild.remove();
+            }
+            for(let ik in p.details[k]) {
+                const bodyTr = document.createElement('tr'),
+                    bodyTrTitle = document.createElement('th'),
+                    bodyTrValues = document.createElement('td');
+                bodyTrTitle.textContent = ik;
+                bodyTrValues.textContent = p.details[k][ik].join(', ');
+                bodyTr.append(bodyTrTitle, bodyTrValues);
+                body.appendChild(bodyTr);
+            }
         }
-        body.appendChild(bodyTable);
+        nav.appendChild(navItem);
     }
     close.className = 'close';
     close.title = 'Close';
@@ -98,20 +113,6 @@ function createPokemonPopup(p, v) {
     detail.classList.add('pokemon-detail');
     nav.classList.add('pokemon-detail-nav');
     body.classList.add('pokemon-detail-body');
-    for(let i = 0; i < nav.children.length; i++) {
-        nav.children[i].onclick = (() => {
-            nav.children[i].style.opacity = '1';
-            nav.children[i].style.borderBottom = '1px inset #0000ff';
-            body.children[i].style.display = 'initial';
-            for(let ii = 0; ii < nav.children.length; ii++) {
-                if(nav.children[i] !== nav.children[ii]) {
-                    nav.children[ii].style.opacity = '0.3';
-                    nav.children[ii].style.borderBottom = 'none';
-                    body.children[ii].style.display = 'none';
-                }
-            }
-        });
-    }
     detail.append(nav, body);
     content.append(close, view, detail);
     content.classList.add('pokemon-content');
@@ -119,6 +120,7 @@ function createPokemonPopup(p, v) {
     state.views.pokemonPopup.className = 'popup';
     state.views.pokemonPopup.appendChild(content);
     document.body.appendChild(state.views.pokemonPopup);
+    nav.children[0].click();
 }
 function removePokemonPopup() {
     if(document.body.contains(state.views.pokemonPopup)) {

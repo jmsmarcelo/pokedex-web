@@ -186,13 +186,6 @@ button:hover {
     opacity: 0.3;
     cursor: pointer;
 }
-.pokemon-detail-nav li:first-child {
-    opacity: 1;
-    border-bottom: 1px inset #0000ff;
-}
-.pokemon-detail-body > *:not(:first-child) {
-    display: none;
-}
 .pokemon-detail-body * {
     font-weight: 500;
     font-size: 0.95em;
